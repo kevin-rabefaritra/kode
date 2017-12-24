@@ -62,28 +62,24 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
 
     public KodeQuery<K, T> where(String field, Object value)
     {
-        String query;
-        if(value instanceof String)
-        {
-            query = String.format(" AND %s = '%s'", field, value.toString());
-        }
-        else
-        {
-            query = String.format(" AND %s = %s", field, value.toString());
-        }
-        return new KodeQuery<K, T>(this.kodeEngine, this.objectClass1, this.query + query);
+        return this.where(field, "=", value);
     }
 
 	public KodeQuery<K, T> whereNot(String field, Object value)
 	{
+		return this.where(field, "!=", value);
+	}
+
+	public KodeQuery<K, T> where(String field, String comparator, Object value)
+	{
 		String query;
 		if(value instanceof String)
 		{
-			query = String.format(" AND %s != '%s'", field, value.toString());
+			query = String.format(" AND %s %s '%s'", field, comparator, value.toString());
 		}
 		else
 		{
-			query = String.format(" AND %s != %s", field, value.toString());
+			query = String.format(" AND %s %s %s", field, comparator, value.toString());
 		}
 		return new KodeQuery<K, T>(this.kodeEngine, this.objectClass1, this.query + query);
 	}
