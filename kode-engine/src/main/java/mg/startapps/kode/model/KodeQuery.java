@@ -102,7 +102,7 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
 
 	private KodeQuery<K, T> inOrNot(String field, Object[] values, String requirement)
 	{
-		String query = String.format(" AND %s %s (", requirement, field);
+		String query = String.format(" AND %s %s (", field, requirement);
 		for(Object value : values)
 		{
 			if(value instanceof String)
