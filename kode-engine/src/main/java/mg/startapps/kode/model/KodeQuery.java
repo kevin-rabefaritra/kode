@@ -90,12 +90,29 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
         return new KodeQuery<K, T>(this.kodeEngine, this.objectClass1, this.query + query);
     }
 
+	public KodeQuery<K, T> in(String field, Object[] values)
+	{
+		return this.inOrNot(field, values, "IN");
+	}
+
     public KodeQuery<K, T> notIn(String field, Object[] values)
 	{
-		String query = String.format(" AND %s NOT IN (", field);
+		return this.inOrNot(field, values, "NOT IN");
+	}
+
+	private KodeQuery<K, T> inOrNot(String field, Object[] values, String requirement)
+	{
+		String query = String.format(" AND %s %s (", requirement, field);
 		for(Object value : values)
 		{
-			query += String.format("%s, ", value.toString());
+			if(value instanceof String)
+			{
+				query += String.format("'%s', ", value.toString());
+			}
+			else
+			{
+				query += String.format("%s, ", value.toString());
+			}
 		}
 		query = query.substring(0, query.length() - 2);
 		query += ")";
@@ -104,7 +121,7 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
 
     public KodeQuery<K, T> orderBy(String field, String order)
     {
-        String query = String.format(") ORDER BY %s %s", field, order);
+        String query = String.format(") ORDER BY LOWER(%s) %s", field, order);
         return new KodeQuery<K, T>(this.kodeEngine, this.objectClass1, this.query + query);
     }
 
