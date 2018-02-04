@@ -251,7 +251,7 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
 		return result;
 	}
 
-	private Cursor getCursor()
+	public Cursor getCursor()
 	{
 		Cursor cursor = null;
 		if(this.kodeEngine.writableDatabase != null)
