@@ -257,10 +257,10 @@ public class KodeSupport
         {
             for(Field field : kodeFields)
             {
-                result += generateColumnsListing((Class<? extends KodeObject>) field.getType(), null, false);
+                result += generateColumnsListing((Class<? extends KodeObject>) field.getType(), null, false) + ", ";
                 // should not assume null for 2nd level kodeobject in next projects
             }
-            return result;
+            // return result.substring(0, result.length() - 2);
         }
         return result.substring(0, result.length() - 2);
     }
