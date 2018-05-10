@@ -22,6 +22,7 @@ import mg.startapps.kode.model.KodeList;
 import mg.startapps.kode.model.KodeObject;
 import mg.startapps.kode.model.KodeQuery;
 import mg.startapps.kode.utils.KodeUtils;
+import mg.startapps.kode.utils.StringUtils;
 
 /**
  * Created by Kevin Rabefaritra on 05/02/2017.
@@ -116,6 +117,32 @@ public class KodeSupport
         }
         return result;
     }
+
+    public static Field getField(Class<? extends KodeObject> objectClass, String name)
+	{
+		Field result = null;
+		if(StringUtils.containsDot(name))
+		{
+			name = StringUtils.strAfterFirstNeedle(name, ".");
+		}
+
+		try
+		{
+			result = objectClass.getDeclaredField(name);
+		}
+		catch (NoSuchFieldException n)
+		{
+			Log.e("getField", n.getMessage());
+			n.printStackTrace();
+		}
+		return result;
+	}
+
+	public static Class getFieldType(Class<? extends KodeObject> objectClass, String name)
+	{
+		Field field = KodeSupport.getField(objectClass, name);
+		return field.getType();
+	}
 
 	public static Field[] getFields(Class<? extends KodeObject> objectClass, String[] fieldNames)
 	{

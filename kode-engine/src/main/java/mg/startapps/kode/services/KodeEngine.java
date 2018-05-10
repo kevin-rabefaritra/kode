@@ -161,7 +161,8 @@ public class KodeEngine
 
     public int insertOrUpdate(@NonNull KodeObject object)
     {
-        List<KodeObject> kodeObjectList = new ArrayList(this.get(object.getClass()).where(KodeSupport.findPrimaryKeyColumn(object.getClass()), KodeSupport.getPrimaryKeyValue(object)).findAll());
+		String primaryKeyColumn = String.format("%s.%s", KodeSupport.getTableName(object), KodeSupport.findPrimaryKeyColumn(object.getClass()));
+        List<KodeObject> kodeObjectList = new ArrayList(this.get(object.getClass()).where(primaryKeyColumn, KodeSupport.getPrimaryKeyValue(object)).findAll());
 		if(kodeObjectList.isEmpty())
 		{
 			this.insert(object);
@@ -239,9 +240,10 @@ public class KodeEngine
     public void update(KodeObject object)
 	{
         // Log.d("update", "WHERE " + String.format("%s = %s", KodeSupport.findPrimaryKeyColumn(object.getClass()), KodeSupport.getPrimaryKeyValue(object)));
+		String primaryKeyColumn = String.format("%s.%s", KodeSupport.getTableName(object), KodeSupport.findPrimaryKeyColumn(object.getClass()));
 		this.writableDatabase.update(KodeSupport.getTableName(object),
 				KodeSupport.fillContentValues(object),
-				String.format("%s = %s", KodeSupport.findPrimaryKeyColumn(object.getClass()), KodeSupport.getPrimaryKeyValue(object)), null);
+				String.format("%s = %s", primaryKeyColumn, KodeSupport.getPrimaryKeyValue(object)), null);
 	}
 
     public KodeQuery run(String query)
