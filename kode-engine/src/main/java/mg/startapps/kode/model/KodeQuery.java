@@ -84,6 +84,12 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
 		return new KodeQuery<K, T>(this.kodeEngine, this.objectClass1, this.query + query);
 	}
 
+	public KodeQuery<K, T> whereRaw(String condition)
+	{
+		condition = " " + condition;
+		return new KodeQuery<K, T>(this.kodeEngine, this.objectClass1, this.query + condition);
+	}
+
     public KodeQuery<K, T> contains(String field, String value)
     {
         String query = " AND LOWER(" + field + ") LIKE ('%" + value.toLowerCase() + "%')";
