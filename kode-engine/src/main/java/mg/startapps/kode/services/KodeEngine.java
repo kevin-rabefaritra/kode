@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
 import java.lang.reflect.Constructor;
@@ -13,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import mg.startapps.kode.exceptions.DatabaseException;
 import mg.startapps.kode.model.KodeObject;
 import mg.startapps.kode.model.KodeQuery;

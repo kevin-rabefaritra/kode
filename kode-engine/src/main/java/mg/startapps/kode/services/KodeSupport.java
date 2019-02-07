@@ -3,8 +3,6 @@ package mg.startapps.kode.services;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -14,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import mg.startapps.kode.annotations.AutoIncrement;
 import mg.startapps.kode.annotations.Ignore;
 import mg.startapps.kode.annotations.PrimaryKey;
