@@ -33,7 +33,7 @@ public class KodeSupport
     public static String generateTableCreate(@NonNull Class<? extends KodeObject> objectClass)
     {
         Field[] fields = getFields(objectClass);
-        String result = String.format("CREATE TABLE %s(", getTableName(objectClass));
+        String result = String.format("CREATE TABLE IF NOT EXISTS %s(", getTableName(objectClass));
         for(int i = 0; i < fields.length; i++)
         {
             if(KodeUtils.isKodeObject(fields[i].getType()))
@@ -80,7 +80,7 @@ public class KodeSupport
 
     public static String generateAssociationCreate(Class<? extends KodeObject> objectClass1, Class<? extends KodeObject> objectClass2)
     {
-        String result = String.format("CREATE TABLE %s_%s(", getTableName(objectClass1), getTableName(objectClass2));
+        String result = String.format("CREATE TABLE IF NOT EXISTS %s_%s(", getTableName(objectClass1), getTableName(objectClass2));
         result += "id INTEGER PRIMARY KEY,";
         result += String.format("id_%s INTEGER,", getTableName(objectClass1));
         result += String.format("id_%s INTEGER", getTableName(objectClass2));
