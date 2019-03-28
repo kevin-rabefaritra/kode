@@ -18,6 +18,7 @@ import mg.startapps.kode.annotations.AutoIncrement;
 import mg.startapps.kode.annotations.Ignore;
 import mg.startapps.kode.annotations.PrimaryKey;
 import mg.startapps.kode.annotations.Unique;
+import mg.startapps.kode.debug.Debug;
 import mg.startapps.kode.model.KodeList;
 import mg.startapps.kode.model.KodeObject;
 import mg.startapps.kode.model.KodeQuery;
@@ -74,7 +75,7 @@ public class KodeSupport
         }
         result = result.substring(0, result.length() - 1);
         result += ");";
-        Log.d("CREATE TABLE", result);
+		Debug.log("CREATE TABLE", result);
         return result;
     }
 
@@ -85,7 +86,7 @@ public class KodeSupport
         result += String.format("id_%s INTEGER,", getTableName(objectClass1));
         result += String.format("id_%s INTEGER", getTableName(objectClass2));
         result += ");";
-        Log.d("CREATE ASSOCIATION", result);
+		Debug.log("CREATE ASSOCIATION", result);
         return result;
     }
 
@@ -347,11 +348,11 @@ public class KodeSupport
             }
             catch (NoSuchMethodException n)
             {
-                Log.d("fillContentValues", "Method " + KodeUtils.generateGetterName(fields[i]) + " is not defined");
+                Log.e("fillContentValues", "Method " + KodeUtils.generateGetterName(fields[i]) + " is not defined");
             }
             catch (Exception e)
             {
-                Log.d("fillContentValues", "Other exception " + e.getMessage());
+                Log.e("fillContentValues", "Other exception " + e.getMessage());
             }
         }
         return result;

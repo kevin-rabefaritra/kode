@@ -138,7 +138,7 @@ public class KodeEngine
             }
             catch (Exception e)
             {
-                Log.d("createTables", "Exception in " + e.getMessage());
+                Log.e("createTables", "Exception in " + e.getMessage());
                 break;
             }
         }
@@ -221,12 +221,12 @@ public class KodeEngine
 		catch (SQLiteConstraintException sqLiteConstraintException)
 		{
 			// eg : primary key or unique
-			Log.d("insert", sqLiteConstraintException.getMessage());
+			Log.e("insert", sqLiteConstraintException.getMessage());
 			return -1;
 		}
         catch (Exception e)
         {
-            Log.d("insert", "Error when inserting " + e.getMessage());
+            Log.e("insert", "Error when inserting " + e.getMessage());
             e.printStackTrace();
             return -1;
         }

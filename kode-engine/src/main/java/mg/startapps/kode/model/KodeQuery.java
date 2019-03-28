@@ -6,6 +6,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import mg.startapps.kode.debug.Debug;
 import mg.startapps.kode.services.KodeEngine;
 import mg.startapps.kode.services.KodeSupport;
 
@@ -164,7 +165,7 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
     {
         List<K> result = new ArrayList<>();
         this.query += this.query.contains("ORDER") ? "" : ")";
-        Log.d("QUERY", this.query);
+		Debug.log("QUERY", this.query);
         Cursor cursor = this.kodeEngine.readableDatabase == null ? this.kodeEngine.writableDatabase.rawQuery(this.query, null) : this.kodeEngine.readableDatabase.rawQuery(this.query, null);
         if(cursor.moveToFirst())
         {
@@ -232,7 +233,7 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
                 e.printStackTrace();
             }
         }
-        Log.d("QUERY first", this.query);
+		Debug.log("QUERY first", this.query);
         cursor.close();
         return null;
     }
