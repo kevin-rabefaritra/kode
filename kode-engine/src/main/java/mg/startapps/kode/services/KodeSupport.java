@@ -639,6 +639,10 @@ public class KodeSupport
 				{
 					setter.invoke(result, jsonObject.getDouble(jsonFields[i]));
 				}
+				else if (fields[i].getType().equals(Float.TYPE))
+				{
+					setter.invoke(result, (float) jsonObject.getDouble(jsonFields[i]));
+				}
 				else if (fields[i].getType().equals(Short.TYPE))
 				{
 					setter.invoke(result, (short) jsonObject.getInt(jsonFields[i]));
