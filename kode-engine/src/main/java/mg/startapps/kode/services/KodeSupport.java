@@ -65,8 +65,7 @@ public class KodeSupport
                     {
                         result += " PRIMARY KEY";
                     }
-					if(fields[i].isAnnotationPresent(Unique.class))
-					{
+					if(fields[i].isAnnotationPresent(Unique.class)) {
 						result += " UNIQUE";
 					}
                     result += ",";
@@ -90,53 +89,55 @@ public class KodeSupport
         return result;
     }
 
-    private static int countNonIgnoredFields(Class<? extends KodeObject> objectClass)
-    {
+    private static int countNonIgnoredFields(Class objectClass, boolean withSuperClass) {
         Field[] fields = objectClass.getDeclaredFields();
         int result = fields.length;
-        for(int i = 0; i < fields.length; i++)
-        {
-            if(fields[i].isAnnotationPresent(Ignore.class))
-            {
+        for(int i = 0; i < fields.length; i++) {
+            if(fields[i].isAnnotationPresent(Ignore.class)) {
                 result--;
             }
         }
+
+        // we add superclass fields
+        if(withSuperClass && objectClass.getSuperclass() != null && objectClass.getSuperclass() != Object.class && objectClass.getSuperclass() != KodeObject.class) {
+        	result = result + KodeSupport.countNonIgnoredFields(objectClass.getSuperclass(), true);
+		}
         return result;
     }
 
-    public static Field[] getFields(Class<? extends KodeObject> objectClass)
+    public static Field[] getFields(Class objectClass)
     {
-        Field[] fields = objectClass.getDeclaredFields();
-        Field[] result = new Field[countNonIgnoredFields(objectClass)];
-        for(int i = 0, j = 0; i < fields.length; i++)
-        {
-            if(!fields[i].isAnnotationPresent(Ignore.class))
-            {
-                result[j] = fields[i];
-                j++;
-            }
-        }
+        Field[] result = new Field[countNonIgnoredFields(objectClass, true)];
+        int index = 0;
+        while (objectClass != null) {
+			Field[] fields = objectClass.getDeclaredFields();
+			for(Field field : fields) {
+				if(!field.isAnnotationPresent(Ignore.class)) {
+					result[index] = field;
+					index++;
+				}
+			}
+
+			objectClass = objectClass.getSuperclass();
+			if(objectClass == null || objectClass == KodeObject.class || objectClass == Object.class) {
+				objectClass = null;
+			}
+		}
         return result;
     }
 
-    public static Field getField(Class<? extends KodeObject> objectClass, String name)
-	{
-		Field result = null;
-		if(StringUtils.containsDot(name))
-		{
+    public static Field getField(Class<? extends KodeObject> objectClass, String name) {
+		if(StringUtils.containsDot(name)) {
 			name = StringUtils.strAfterFirstNeedle(name, ".");
 		}
 
-		try
-		{
-			result = objectClass.getDeclaredField(name);
+		Field[] fields = KodeSupport.getFields(objectClass);
+		for(Field field : fields) {
+			if(field.getName().equals(name)) {
+				return field;
+			}
 		}
-		catch (NoSuchFieldException n)
-		{
-			Log.e("getField", n.getMessage());
-			n.printStackTrace();
-		}
-		return result;
+		return null;
 	}
 
 	public static Class getFieldType(Class<? extends KodeObject> objectClass, String name)
@@ -154,8 +155,7 @@ public class KodeSupport
 		{
 			for (int k = 0; k < fields.length; k++)
 			{
-				if(fields[k].getName().toLowerCase().equals(fieldNames[j].toLowerCase()))
-				{
+				if(fields[k].getName().toLowerCase().equals(fieldNames[j].toLowerCase())) {
 					result[i] = fields[k];
 					i++;
 				}
@@ -306,79 +306,63 @@ public class KodeSupport
                 Object value = getter.invoke(object);
 
                 // we only insert values which are not autoincrement or kodeobject instances
-                if(!fields[i].isAnnotationPresent(AutoIncrement.class) || KodeUtils.isKodeObject(fields[i].getType()))
-                {
-                    String fieldName = fields[i].getName().toLowerCase();
+                if(!fields[i].isAnnotationPresent(AutoIncrement.class) || KodeUtils.isKodeObject(fields[i].getType())) {
+
+                	String fieldName = fields[i].getName().toLowerCase();
                     // Log.d("Calling getter", KodeUtils.generateGetterName(fields[i]) + " with value " + value.toString() + " in " + fieldName);
-                    if (value instanceof Integer)
-                    {
+                    if (value instanceof Integer) {
                         result.put(fieldName, Integer.valueOf(value.toString()));
                     }
-                    else if(value instanceof Short)
-                    {
+                    else if(value instanceof Short) {
                         result.put(fieldName, Short.valueOf(value.toString()));
                     }
-                    else if (value instanceof String)
-                    {
+                    else if (value instanceof String) {
                         result.put(fieldName, (String) value);
                     }
-                    else if (value instanceof Double)
-                    {
+                    else if (value instanceof Double) {
                         result.put(fieldName, Double.valueOf(value.toString()));
                     }
-                    else if(value instanceof KodeObject)
-                    {
+                    else if(value instanceof KodeObject) {
                         // we set put id of the kodeobject (in Sqlite, we have the kodeobject as an FK)
                         KodeObject valueObject = (KodeObject) value;
                         Method getterId = value.getClass().getMethod(KodeUtils.generateGetterName(KodeSupport.findPrimaryKeyColumn(valueObject.getClass())));
                         result.put(String.format("id_%s", value.getClass().getSimpleName().toLowerCase()), Integer.parseInt(getterId.invoke(value).toString()));
                     }
                 }
-                else if(fields[i].isAnnotationPresent(AutoIncrement.class))
-                {
+                else if(fields[i].isAnnotationPresent(AutoIncrement.class)) {
 					// we insert autoincrement value if value is provided (!= 0)
 					String fieldName = fields[i].getName().toLowerCase();
 					Integer fieldValue = Integer.valueOf(value.toString());
 					// autoincrement = field is an integer
-					if(fieldValue != 0)
-					{
+					if(fieldValue != 0) {
 						result.put(fieldName, fieldValue);
 					}
                 }
             }
-            catch (NoSuchMethodException n)
-            {
+            catch (NoSuchMethodException n) {
                 Log.e("fillContentValues", "Method " + KodeUtils.generateGetterName(fields[i]) + " is not defined");
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Log.e("fillContentValues", "Other exception " + e.getMessage());
             }
         }
         return result;
     }
 
-	public static ContentValues fillContentValues(String[] keys, Object[] values)
-	{
+	public static ContentValues fillContentValues(String[] keys, Object[] values) {
 		ContentValues result = new ContentValues();
-		if(keys.length == values.length)
-		{
-			for(int i = 0; i < keys.length; i++)
-			{
-				if (values[i] instanceof Integer)
-				{
+		if(keys.length == values.length) {
+			for(int i = 0; i < keys.length; i++) {
+				if (values[i] instanceof Integer) {
 					result.put(keys[i], Integer.valueOf(values[i].toString()));
 				}
-				else if(values[i] instanceof Short)
-				{
+				else if(values[i] instanceof Short) {
 					result.put(keys[i], Short.valueOf(values[i].toString()));
 				}
-				else if (values[i] instanceof String)
-				{
+				else if (values[i] instanceof String) {
 					result.put(keys[i], (String) values[i]);
 				}
-				else if (values[i] instanceof Double)
-				{
+				else if (values[i] instanceof Double) {
 					result.put(keys[i], Double.valueOf(values[i].toString()));
 				}
 			}
@@ -403,8 +387,7 @@ public class KodeSupport
     {
         writableDatabase.execSQL(generateTableCreate(objectClass));
         List<Class<? extends KodeObject>> kodeListFields = KodeUtils.getKodeListFieldsType(objectClass);
-        for(Class<? extends KodeObject> kodeClass : kodeListFields)
-        {
+        for(Class<? extends KodeObject> kodeClass : kodeListFields) {
             writableDatabase.execSQL(generateAssociationCreate(objectClass, kodeClass));
         }
     }
@@ -434,13 +417,10 @@ public class KodeSupport
         return getTableName(object.getClass());
     }
 
-    public static String findPrimaryKeyColumn(Class<? extends KodeObject> objectClass)
-    {
-        Field[] fields = objectClass.getDeclaredFields();
-        for(int i = 0; i < fields.length; i++)
-        {
-            if(fields[i].isAnnotationPresent(PrimaryKey.class))
-            {
+    public static String findPrimaryKeyColumn(Class<? extends KodeObject> objectClass) {
+        Field[] fields = KodeSupport.getFields(objectClass);
+        for(int i = 0; i < fields.length; i++) {
+            if(fields[i].isAnnotationPresent(PrimaryKey.class)) {
                 return fields[i].getName().toLowerCase();
             }
         }
@@ -501,10 +481,8 @@ public class KodeSupport
                 {
                     Method getter = object.getClass().getMethod(KodeUtils.generateGetterName(fields[i]));
                     KodeList<? extends KodeObject> value = (KodeList<? extends KodeObject>) getter.invoke(object);
-					if(value != null)
-					{
-						for (KodeObject kodeObject : value)
-						{
+					if(value != null) {
+						for (KodeObject kodeObject : value) {
 							result.add(kodeObject);
 						}
 					}
@@ -556,12 +534,10 @@ public class KodeSupport
 
                 if (fields[i].getType().equals(Integer.TYPE))
                 {
-					if(fields[i].isAnnotationPresent(PrimaryKey.class))
-					{
+					if(fields[i].isAnnotationPresent(PrimaryKey.class)) {
 						// if primary key, we serach for id_place, then id if doesnt exists
 						columnIndex = cursor.getColumnIndex("id_" + getTableName(kodeObject));
-						if(columnIndex == -1)
-						{
+						if(columnIndex == -1) {
 							columnIndex = cursor.getColumnIndex(fields[i].getName().toLowerCase());
 						}
 					}
@@ -594,8 +570,7 @@ public class KodeSupport
                     if(fetchAll)
                     {
                         int columnIdIndex = cursor.getColumnIndex(findPrimaryKeyColumn(kodeObject.getClass()));
-						if(columnIdIndex == -1)
-						{
+						if(columnIdIndex == -1) {
 							// in case the object is a foreign key. eg : Place -> id_place (instead of id)
 							columnIdIndex = cursor.getColumnIndex(String.format("id_%s", getTableName(kodeObject.getClass())));
 						}
@@ -627,24 +602,19 @@ public class KodeSupport
 			{
 				// Log.d("CAL", "CAlling " + fields[i].getName() + " with " + jsonFields[i]);
 				Method setter = objectClass.getMethod(KodeUtils.generateSetterName(fields[i]), fields[i].getType());
-				if (fields[i].getType().equals(Integer.TYPE))
-				{
+				if (fields[i].getType().equals(Integer.TYPE)) {
 					setter.invoke(result, jsonObject.getInt(jsonFields[i]));
 				}
-				else if (fields[i].getType().equals(String.class))
-				{
+				else if (fields[i].getType().equals(String.class)) {
 					setter.invoke(result, jsonObject.getString(jsonFields[i]));
 				}
-				else if (fields[i].getType().equals(Double.TYPE))
-				{
+				else if (fields[i].getType().equals(Double.TYPE)) {
 					setter.invoke(result, jsonObject.getDouble(jsonFields[i]));
 				}
-				else if (fields[i].getType().equals(Float.TYPE))
-				{
+				else if (fields[i].getType().equals(Float.TYPE)) {
 					setter.invoke(result, (float) jsonObject.getDouble(jsonFields[i]));
 				}
-				else if (fields[i].getType().equals(Short.TYPE))
-				{
+				else if (fields[i].getType().equals(Short.TYPE)) {
 					setter.invoke(result, (short) jsonObject.getInt(jsonFields[i]));
 				}
 				// we can't parse kodeObject and kodeList fields

@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Kode.iml" filepath="$PROJECT_DIR$/Kode.iml" group="Kode" />
+      <module fileurl="file://$PROJECT_DIR$/app/Kode-app.iml" filepath="$PROJECT_DIR$/app/Kode-app.iml" group="Kode/app" />
+      <module fileurl="file://$PROJECT_DIR$/kode-engine/Kode-kode-engine.iml" filepath="$PROJECT_DIR$/kode-engine/Kode-kode-engine.iml" group="Kode/kode-engine" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kode.iml" filepath="$PROJECT_DIR$/kode.iml" />
       <module fileurl="file://$PROJECT_DIR$/kode-engine/kode-engine.iml" filepath="$PROJECT_DIR$/kode-engine/kode-engine.iml" />
     </modules>
   </component>
