@@ -9,7 +9,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "2.1.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -27,6 +27,6 @@ dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.appcompat:appcompat:1.2.0-alpha03'
     testImplementation 'junit:junit:4.12'
 }

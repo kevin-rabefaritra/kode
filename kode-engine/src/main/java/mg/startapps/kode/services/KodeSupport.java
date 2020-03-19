@@ -142,6 +142,10 @@ public class KodeSupport
 
 	public static Class getFieldType(Class<? extends KodeObject> objectClass, String name)
 	{
+		// if it's a function (eg. DATETIME)
+		if(name.contains("(")) {
+			return null;
+		}
 		Field field = KodeSupport.getField(objectClass, name);
 		return field.getType();
 	}

@@ -87,7 +87,7 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
 
 	public KodeQuery<K, T> whereRaw(String condition)
 	{
-		condition = " " + condition;
+		condition = " AND " + condition;
 		return new KodeQuery<K, T>(this.kodeEngine, this.objectClass1, this.query + condition);
 	}
 
@@ -130,7 +130,7 @@ public class KodeQuery<K extends KodeObject, T extends KodeObject>
     {
 		Class fieldType = KodeSupport.getFieldType(this.objectClass1, field);
         String query = String.format(") ORDER BY %s %s", field, order);
-		if(fieldType.equals(String.class))
+		if(fieldType != null && fieldType.equals(String.class))
 		{
 			query = String.format(") ORDER BY LOWER(%s) %s", field, order);
 		}
