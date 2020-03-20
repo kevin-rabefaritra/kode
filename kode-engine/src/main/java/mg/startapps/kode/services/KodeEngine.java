@@ -72,6 +72,8 @@ public class KodeEngine
 		}
 		catch (Exception n)
 		{
+			Log.e("getInstance", n.getMessage());
+			n.printStackTrace();
 			return null;
 		}
     }
@@ -98,22 +100,27 @@ public class KodeEngine
         }
     }
 
-    public void close()
+    public void close(boolean withBase)
     {
         if(this.writableDatabase != null)
         {
             // uncomment while using stathos
-            // this.writableDatabase.close();
+            this.writableDatabase.close();
         }
         if(this.readableDatabase != null)
         {
-            // this.readableDatabase.close();
+            this.readableDatabase.close();
         }
-        if(this.sqLiteBase != null)
+        if(withBase && this.sqLiteBase != null)
         {
-            // this.sqLiteBase.close();
+        	this.sqLiteBase.close();
         }
     }
+
+    public void close()
+	{
+		this.close(false);
+	}
 
     public boolean isOpen()
     {
